@@ -1,8 +1,7 @@
-import glob2
+from typing import List, Dict, Optional
 from dataclasses import dataclass
-from typing import List, Dict
 from Converter import ColorConverter
-
+import glob2
 
 @dataclass
 class PhotoVariant:
@@ -28,7 +27,6 @@ def load_data(folder_path: str) -> Dict[str, Dict[str, List[PhotoVariant]]]:
     """
     variants_by_photo_and_person: Dict[str, Dict[str, List[PhotoVariant]]] = {}
 
-    # Iteracja po wszystkich plikach .txt w folderze
     for file_path in glob2.glob(f"{folder_path}/*.txt"):
         file_name = file_path.split("/")[-1]  # np. osoba1.txt
         person_name = file_name.replace(".txt", "")  # wyodrębnienie nazwy osoby, np. osoba1
@@ -36,13 +34,12 @@ def load_data(folder_path: str) -> Dict[str, Dict[str, List[PhotoVariant]]]:
             for line in f:
                 line = line.strip()
                 if not line:
-                    continue  # pominięcie pustych linii
+                    continue
                 parts = line.split()
-                if len(parts) < 2:  # pominięcie linii bez kolorów
+                if len(parts) < 2:
                     continue
                 photo_name = parts[0]  # np. 000000010432.jpg
                 hex_colors = [color.strip(",") for color in parts[1:]]  # usuwanie przecinków
-                # Konwersja każdego koloru HEX na LAB
                 lab_colors = [ColorConverter.hex_to_lab(hex_color) for hex_color in hex_colors]
                 variant = PhotoVariant(
                     file=file_name,
@@ -50,7 +47,6 @@ def load_data(folder_path: str) -> Dict[str, Dict[str, List[PhotoVariant]]]:
                     colors_hex=hex_colors,
                     colors_lab=lab_colors
                 )
-                # Grupowanie wariantów według zdjęcia i osoby
                 if photo_name not in variants_by_photo_and_person:
                     variants_by_photo_and_person[photo_name] = {}
                 if person_name not in variants_by_photo_and_person[photo_name]:

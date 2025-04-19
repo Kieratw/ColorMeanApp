@@ -6,3 +6,4 @@ glob2
 scikit-learn
 matplotlib
 scikit-image
+PyQt5
